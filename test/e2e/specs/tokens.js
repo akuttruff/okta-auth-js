@@ -63,16 +63,18 @@ describe('E2E token flows', () => {
         await browser.waitUntil(async () => {
           const idToken = await TestApp.idToken.then(el => el.getText());
           const accessToken = await TestApp.accessToken.then(el => el.getText());
+          const refreshToken = await TestApp.refreshToken.then(el => el.getText());
           return (
             idToken !== prev.idToken &&
-            accessToken !== prev.accessToken
+            accessToken !== prev.accessToken && 
+            refreshToken !== prev.refreshToken 
           );
         }, 10000);
         await TestApp.assertLoggedIn();
         await TestApp.logoutRedirect();
       });
 
-      it('Can receive an error on token renew if user has signed out from Okta page', async () => {
+      xit('Can receive an error on token renew if user has signed out from Okta page', async () => {
         await loginPopup(flow);
         let tokenError = await TestApp.tokenError.then(el => el.getText());
         assert(tokenError.trim() === '');

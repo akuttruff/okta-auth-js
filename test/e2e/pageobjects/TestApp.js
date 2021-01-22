@@ -48,6 +48,7 @@ class TestApp {
   get returnHomeBtn() { return $('#return-home'); }
   get accessToken() { return $('#access-token'); }
   get idToken() { return $('#id-token'); }
+  get refreshToken() { return $('#refresh-token'); }
   get success() { return $('#success'); }
   get error() { return $('#error'); }
   get xhrError() { return $('#xhr-error'); }

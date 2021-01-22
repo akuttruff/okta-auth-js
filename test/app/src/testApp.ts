@@ -220,7 +220,7 @@ class TestApp {
     signIn.showSignInToGetTokens({
       clientId: config.clientId,
       redirectUri: config.redirectUri,  
-      scope: ['openid', 'email'],
+      scope: ['openid', 'email', 'offline_access'],
   
       // Return an access token from the authorization server
       getAccessToken: true,
