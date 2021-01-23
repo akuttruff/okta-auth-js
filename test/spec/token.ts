@@ -13,6 +13,7 @@ import pkce from '../../lib/pkce';
 import http from '../../lib/http';
 import * as sdkCrypto from '../../lib/crypto';
 import * as token from '../../lib/token';
+import TransactionManager from '../../lib/TransactionManager';
 
 const _ = require('lodash');
 const packageJson = require('../../package.json');
@@ -1490,7 +1491,7 @@ describe('token.getWithRedirect', function() {
       'code_challenge_methods_supported': [codeChallengeMethod]
     }));
     spyOn(pkce, 'generateVerifier');
-    spyOn(pkce, 'saveMeta');
+    spyOn(TransactionManager.prototype, 'save');
     spyOn(pkce, 'computeChallenge').and.returnValue(Promise.resolve(codeChallenge));
   }
   it('Uses insecure cookie settings if running on http://localhost', function() {
@@ -2247,11 +2248,11 @@ describe('token.parseFromUrl', function() {
     var redirectUri = 'https://example.com/redirect';
   
     spyOn(OktaAuth.features, 'isPKCESupported').and.returnValue(true);
-    spyOn(pkce, 'loadMeta').and.returnValue({
+    spyOn(TransactionManager.prototype, 'load').and.returnValue({
       codeVerifier,
       redirectUri
     });
-    spyOn(pkce, 'clearMeta');
+    spyOn(TransactionManager.prototype, 'clear');
     spyOn(pkce, 'exchangeCodeForTokens').and.returnValue(Promise.resolve(response));
   }
 

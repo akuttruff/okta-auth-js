@@ -1,16 +1,24 @@
-import storageBuilder from '../../lib/storageBuilder';
+import SavedObject from '../../lib/SavedObject';
 
-describe('storageBuilder', () => {
+describe('SavedObject', () => {
 
-  it('throws if a storagename is not provided', () => {
+  it('throws if a storage is not provided', () => {
     const fn = function() {
-      storageBuilder();
+      return new SavedObject();
+    };
+    expect(fn).toThrowError('"storage" is required');
+  });
+
+  it('throws if a storageName is not provided', () => {
+    const fn = function() {
+      const storage = {};
+      return new SavedObject(storage);
     };
     expect(fn).toThrowError('"storageName" is required');
   });
 
   it('Returns an interface around a storage object', () => {
-    const storage = storageBuilder({}, 'fake');
+    const storage = new SavedObject({}, 'fake');
     expect(typeof storage.getStorage).toBe('function');
     expect(typeof storage.setStorage).toBe('function');
     expect(typeof storage.clearStorage).toBe('function');
@@ -23,7 +31,7 @@ describe('storageBuilder', () => {
         getItem: jest.fn()
       };
       const storageName = 'fake';
-      const storage = storageBuilder(inner, storageName);
+      const storage = new SavedObject(inner, storageName);
       storage.getStorage();
       expect(inner.getItem).toHaveBeenCalledWith(storageName);
     });
@@ -33,7 +41,7 @@ describe('storageBuilder', () => {
         getItem: jest.fn().mockReturnValue(JSON.stringify(obj))
       };
       const storageName = 'fake';
-      const storage = storageBuilder(inner, storageName);
+      const storage = new SavedObject(inner, storageName);
       expect(storage.getStorage()).toEqual(obj);
     });
     it('throws if object cannot be decoded', () => {
@@ -41,7 +49,7 @@ describe('storageBuilder', () => {
         getItem: jest.fn().mockReturnValue('a string that wont decode')
       };
       const storageName = 'fake';
-      const storage = storageBuilder(inner, storageName);
+      const storage = new SavedObject(inner, storageName);
       const fn = function() {
         storage.getStorage();
       };
@@ -55,7 +63,7 @@ describe('storageBuilder', () => {
         setItem: jest.fn()
       };
       const storageName = 'fake';
-      const storage = storageBuilder(inner, storageName);
+      const storage = new SavedObject(inner, storageName);
       storage.setStorage({});
       expect(inner.setItem).toHaveBeenCalledWith(storageName, '{}');
     });
@@ -64,7 +72,7 @@ describe('storageBuilder', () => {
         setItem: jest.fn()
       };
       const storageName = 'fake';
-      const storage = storageBuilder(inner, storageName);
+      const storage = new SavedObject(inner, storageName);
       const obj = { fakeObject: true, anArray: [1, 2, 3] };
       storage.setStorage(obj);
       expect(inner.setItem).toHaveBeenCalledWith(storageName, JSON.stringify(obj));
@@ -76,7 +84,7 @@ describe('storageBuilder', () => {
         })
       };
       const storageName = 'fake';
-      const storage = storageBuilder(inner, storageName);
+      const storage = new SavedObject(inner, storageName);
       const fn = function() {
         storage.setStorage({});
       };
@@ -90,7 +98,7 @@ describe('storageBuilder', () => {
         setItem: jest.fn()
       };
       const storageName = 'fake';
-      const storage = storageBuilder(inner, storageName);
+      const storage = new SavedObject(inner, storageName);
       storage.clearStorage();
       expect(inner.setItem).toHaveBeenCalledWith(storageName, '{}');
     });
@@ -104,7 +112,7 @@ describe('storageBuilder', () => {
         getItem: jest.fn().mockReturnValue(JSON.stringify(obj))
       };
       const storageName = 'fake';
-      const storage = storageBuilder(inner, storageName);
+      const storage = new SavedObject(inner, storageName);
       storage.clearStorage('key1');
       expect(inner.getItem).toHaveBeenCalledWith(storageName);
       expect(inner.setItem).toHaveBeenCalledWith(storageName, '{"key2":"b"}');
@@ -125,7 +133,7 @@ describe('storageBuilder', () => {
         getItem: jest.fn().mockReturnValue(JSON.stringify(initialObj))
       };
       const storageName = 'fake';
-      const storage = storageBuilder(inner, storageName);
+      const storage = new SavedObject(inner, storageName);
       storage.updateStorage('key2', 'b');
       expect(inner.getItem).toHaveBeenCalledWith(storageName);
       expect(inner.setItem).toHaveBeenCalledWith(storageName, JSON.stringify(finalObj));

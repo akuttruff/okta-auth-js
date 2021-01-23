@@ -58,11 +58,11 @@ import {
   TokenParams,
   TokenResponse,
   CustomUrls,
-  PKCEMeta,
   ParseFromUrlOptions,
   Tokens,
   RefreshToken
 } from './types';
+import { PKCETransaction } from './types/AuthTransaction';
 
 const cookies = browserStorage.storage;
 
@@ -749,11 +749,16 @@ function getWithRedirect(sdk: OktaAuth, options: TokenParams): Promise<void> {
 
       if (sdk.options.pkce) {
         // We will need these values after redirect when we call /token
-        var meta: PKCEMeta = {
-          codeVerifier: tokenParams.codeVerifier,
-          redirectUri: tokenParams.redirectUri
+        const { codeVerifier, codeChallenge, codeChallengeMethod, redirectUri, nonce, state } = tokenParams;
+        var transaction: PKCETransaction = {
+          codeVerifier,
+          codeChallenge,
+          codeChallengeMethod,
+          redirectUri,
+          nonce,
+          state
         };
-        PKCE.saveMeta(sdk, meta);
+        sdk.transactionManager.save(transaction);
       }
       sdk.token.getWithRedirect._setLocation(requestUrl);
     });
@@ -942,8 +947,8 @@ function parseFromUrl(sdk, options: string | ParseFromUrlOptions): Promise<Token
         responseMode === 'query' ? removeSearch(sdk) : removeHash(sdk);
       }
       if (sdk.options.pkce) {
-        const meta: PKCEMeta = PKCE.loadMeta(sdk);
-        const { codeVerifier, redirectUri } = meta;
+        const transaction: PKCETransaction = sdk.transactionManager.load();
+        const { codeVerifier, redirectUri } = transaction;
         oauthParams = Object.assign({
           codeVerifier,
           redirectUri
@@ -952,7 +957,7 @@ function parseFromUrl(sdk, options: string | ParseFromUrlOptions): Promise<Token
       return handleOAuthResponse(sdk, oauthParams, res, urls)
         .finally(() => {
           if (sdk.options.pkce) {
-            PKCE.clearMeta(sdk);
+            sdk.transactionManager.clear();
           }
         });
     });

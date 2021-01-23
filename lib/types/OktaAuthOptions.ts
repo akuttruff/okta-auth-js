@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-import { StorageUtil } from './Storage';
+import { StorageManagerOptions, StorageUtil } from './Storage';
 import { CookieOptions } from './Cookies';
 import { HttpRequestClient } from './http';
 import { OktaAuth } from './';
@@ -60,5 +60,6 @@ export interface OktaAuthOptions extends CustomUrls {
   maxClockSkew?: number;
   transformAuthState?: (oktaAuth: OktaAuth, authState: AuthState) => Promise<AuthState>;
   restoreOriginalUri?: (oktaAuth: OktaAuth, originalUri: string) => Promise<void>;
-  devMode?: boolean; 
+  devMode?: boolean;
+  storageManager?: StorageManagerOptions;
 }
